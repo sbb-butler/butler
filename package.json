@@ -1,0 +1,25 @@
+{
+  "name": "sbb-butler",
+  "version": "0.1.0",
+  "description": "Serve people with accessability problems with Cisco Tropo and SBB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbb-butler/butler.git"
+  },
+  "keywords": [
+    "Tropo",
+    "SBB",
+    "Accessability"
+  ],
+  "author": "Lukas Martinelli <me@lukasmartinelli.ch>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sbb-butler/butler/issues"
+  },
+  "homepage": "https://github.com/sbb-butler/butler#readme"
+}
