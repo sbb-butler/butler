@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/sbb-butler/butler#readme",
   "dependencies": {
-    "tropo": "^15.0.9"
+    "tropo": "^15.0.9",
+    "tropo-webapi": "^1.2.0"
   }
 }
