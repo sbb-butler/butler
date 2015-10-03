@@ -8,7 +8,7 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.json());
 
 // Usage
-// var response = require('./response.js');
+// var response = require('./sbb/response.js');
 // response("Zurich", "St.Gallen", function(response) {
 // 	console.log(response);
 //  -> {from: "Zurich", platform: "2"}
