@@ -23,7 +23,14 @@
   },
   "homepage": "https://github.com/sbb-butler/butler#readme",
   "dependencies": {
+<<<<<<< HEAD
     "request": "^2.64.0",
     "tropo": "^15.0.9"
+=======
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "tropo": "^15.0.9",
+    "tropo-webapi": "^1.2.0"
+>>>>>>> 8e83023515ad6988332e005490ad5eee86a1e6d5
   }
 }
