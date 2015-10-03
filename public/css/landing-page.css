@@ -35,20 +35,27 @@ h6 {
     padding-bottom: 50px;
     text-align: center;
     color: #f8f8f8;
+    max-height: 450px;
     background: url(../img/intro-bg.jpg) no-repeat center center;
     background-size: cover;
 }
 
 .intro-message {
     position: relative;
-    padding-top: 20%;
+    padding-top: 10%;
     padding-bottom: 20%;
+}
+
+.intro-message img {
+    margin-top: -0.2em;
+    height: 0.8em;
+    display: inline;
 }
 
 .intro-message > h1 {
     margin: 0;
     text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-    font-size: 5em;
+    font-size: 6em;
 }
 
 .intro-divider {
@@ -59,6 +66,14 @@ h6 {
 
 .intro-message > h3 {
     text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+    font-size: 2.6em;
+}
+
+.intro-message a,
+.intro-message a:hover,
+.intro-message a:active,
+.intro-message a:visited {
+    color: white;
 }
 
 @media(max-width:767px) {
