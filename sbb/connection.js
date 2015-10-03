@@ -28,7 +28,7 @@ module.exports = function(from, to, callback) {
 			}else{
 				callback(new Error("No connections found."),[]);
 			}
-			callback(error, stations);
+			callback(error, sections);
 		}
 	});
 }
