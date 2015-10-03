@@ -14,7 +14,7 @@ io = io.listen(app.listen(80));
 var sessions = {};
 
 app.post('/', function(req, res){
-    console.log(req.body);
+    //console.log(req.body);
 
     var tropo = new TropoWebAPI();
 
@@ -27,7 +27,7 @@ app.post('/', function(req, res){
     
     
     var callId = req.body.session.from.id;
-    console.log(callId);
+    //console.log(callId);
     var sessionId = req.body['session']['id'];
     sessions[sessionId] = {
         callId: callId
@@ -69,7 +69,7 @@ app.post('/departure', function(req, res){
     //console.log(session);
 
     io.emit('call', session);
-    console.log(session);
+    //console.log(session);
     sbb(session.departure, session.destination, function(response) {
         var firstStation = ""+response[0];
         tropo.say(firstStation, null, null, null, null, "Stefan");
@@ -80,7 +80,7 @@ app.post('/departure', function(req, res){
         //require the Twilio module and create a REST client 
         var client = require('twilio')(accountSid, authToken); 
         client.messages.create({ 
-            to: "+41792565800", 
+            to: "+"+session.callId, 
             from: "(801) 335-6779", 
             body: response.toString(),
         }, function(err, message) { 
