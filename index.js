@@ -4,6 +4,7 @@ var app = express();
 var tropo_webapi = require('tropo-webapi');
 var server = http.createServer(app)
 var bodyParser = require('body-parser')
+var sbb = require('./sbb/response.js');
 
 app.use(bodyParser.json());
 
@@ -46,7 +47,6 @@ app.post('/destination', function(req, res){
     tropo.ask(choices, 3, null, null, "departure", null, null, say, null, null);
     tropo.on("continue", null, "/departure", true);
 
-    console.log(destination)
     res.send(TropoJSON(tropo));
 });
 
@@ -57,14 +57,14 @@ app.post('/departure', function(req, res){
     var departure = req.body['result']['actions']['value'];
     var sessionId = req.body['result']['sessionId'];
     sessions[sessionId].departure = departure;
-    tropo.say("Your departure is " + departure);
-    console.log(sessions[sessionId])
 
-    // Lookup sbb connections
-    // Tell connection
+    var session = sessions[sessionId]
 
-    console.log(departure)
-    res.send(TropoJSON(tropo));
+    console.log(session);
+    sbb(session.departure, session.destination, function(response) {
+        tropo.say(response);
+        res.send(TropoJSON(tropo));
+    });
 });
 
 app.listen(80);
