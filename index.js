@@ -28,14 +28,11 @@ function filterCallableStations(choix) {
 var sessions = {};
 
 app.post('/', function(req, res){
-    //console.log(req.body);
-
     var tropo = new TropoWebAPI();
 
     var say = new Say("Willkommen bei SBB! Wohin wollen Sie fahren?", null, null, null, null, "Stefan");
 
     var choices = new Choices(filterCallableStations(stations.stations).join(", "));
-    console.log(choices);
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "destination", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/destination", true);
@@ -44,7 +41,6 @@ app.post('/', function(req, res){
 
 
     var callId = req.body.session.from.id;
-    //console.log(callId);
     var sessionId = req.body['session']['id'];
     sessions[sessionId] = {
         callId: callId
@@ -57,8 +53,7 @@ app.post('/', function(req, res){
 app.post('/destination', function(req, res){
     var tropo = new TropoWebAPI();
 
-    //console.log(req.body);
-    if(req.body['result']['actions']['value']) {
+    if(req.body['result']['actions']) {
         var destination = req.body['result']['actions']['value'];
         var sessionId = req.body['result']['sessionId'];
         sessions[sessionId].destination = destination;
@@ -84,19 +79,19 @@ app.post('/destination', function(req, res){
 app.post('/departure', function(req, res){
     var tropo = new TropoWebAPI();
 
-    //console.log(req.body);
-    if(req.body['result']['actions']['value']) {
+    if(req.body['result']['actions']) {
         var departure = req.body['result']['actions']['value'];
         var sessionId = req.body['result']['sessionId'];
         sessions[sessionId].departure = departure;
 
         var session = sessions[sessionId];
-        //console.log(session);
 
         io.emit('call', session);
-        //console.log(session);
+
+        console.log(session);
+
         sbb(session.departure, session.destination, function (error, response) {
-            if (error) {
+            if (error || response.length == 0) {
                 tropo.say("SBB konnte ihre Anfrage nicht verarbeiten.", null, null, null, null, "Stefan");
             } else {
                 var firstStation = "" + response[0];
