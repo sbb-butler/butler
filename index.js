@@ -106,7 +106,7 @@ app.post('/departure', function(req, res){
                 from: "(801) 335-6779",
                 body: response.toString(),
             }, function (err, message) {
-                
+
             });
         }
         res.send(TropoJSON(tropo));
