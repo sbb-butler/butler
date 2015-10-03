@@ -4,9 +4,9 @@ The SBB Butler delivers an easy and quick way to get the timetable for your next
 
 Short after the call you are going to receive a compact SMS with all the stops between you and your destination. We think this is the perfect assistent for people, which are overwhelmed with the detailed information the current SBB timetable provides.
 
-To create this project, we used Cisco Tropo and the Swiss public transport API.This project is meant as submission for the Hack Zurich 2015.
+To create this project, we used [Cisco Tropo](https://www.tropo.com/) and the [Swiss public transport API](http://transport.opendata.ch/). This project is meant as a submission for the [Hack Zurich 2015 Event](http://www.hackzurich.com/15).
 
-![Phone Call Log](https://github.com/sbb-butler/butler/raw/master/photo.png "Logo Title Text 1")
+![Phone Call Log](https://github.com/sbb-butler/butler/raw/master/photo.png "Phone Call Log")
 
 
 ## Get started
