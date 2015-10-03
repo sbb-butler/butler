@@ -1,4 +1,5 @@
 var http = require('http');
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var tropo_webapi = require('tropo-webapi');
@@ -7,7 +8,8 @@ var bodyParser = require('body-parser')
 var sbb = require('./sbb/connection.js');
 var io = require('socket.io');
 var serveStatic = require('serve-static');
-var stationData = require('./stations.json');
+
+var Converter = require("csvtojson").Converter;
 
 var port = process.env.VCAP_APP_PORT || 3000;
 
@@ -33,8 +35,32 @@ app.use(bodyParser.json());
 app.use(serveStatic(__dirname + '/public'));
 io = io.listen(app.listen(port));
 
-// Stateful session store
+// Stateful session and station store
 var sessions = {};
+var stations = [];
+
+function sanitizeTrainStation(station) {
+    return station.replace(/\//g, " ").replace(/-/g, " ");
+}
+
+function getTrainStations(callback) {
+    var converter = new Converter({});
+
+    converter.on("end_parsed", function (results) {
+        var stationNames = results.map(function(val) {
+            return sanitizeTrainStation(val.stop_name);
+        })
+        callback(stationNames);
+    });
+ 
+    fs.createReadStream("./stops.csv").pipe(converter);
+}
+
+// First request will fail if it comes before
+// the station csv has been parsed
+getTrainStations(function(results) {
+    stations = results;
+});
 
 // Some stations cannot be parsed into a grammar so they need to be filtered out
 function allowStationsByGrammar(choices) {
@@ -44,12 +70,14 @@ function allowStationsByGrammar(choices) {
             && val.indexOf(".") == -1
             && val.indexOf("'") == -1
             && val.indexOf("/") == -1
+            && val.indexOf("[") == -1
+            && val.indexOf("]") == -1
             && val.indexOf("é") == -1;
     });
 }
 
-function createStationsGrammar(language) {
-    var goodStations = allowStationsByGrammar(stationData.stations);
+function createStationsGrammar() {
+    var goodStations = allowStationsByGrammar(stations);
     return goodStations.join(", ");
 }
 
@@ -102,7 +130,7 @@ app.post('/askDestination', function(req, res){
 
         sessions[sessionId].language = language;
         var say = new Say(language.whereToGo, null, null, null, null, language.voice);
-        var choices = new Choices(createStationsGrammar(language));
+        var choices = new Choices(createStationsGrammar());
         tropo.ask(choices, 3, null, null, "destination", language.recognizer, null, say, null, language.voice);
 
         tropo.on("continue", null, "/destination", true);
