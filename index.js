@@ -36,6 +36,8 @@ app.post('/', function(req, res){
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "destination", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/destination", true);
+    tropo.on("incomplete", null, "/incomplete", true);
+
 
 
     var callId = req.body.session.from.id;
@@ -68,6 +70,8 @@ app.post('/destination', function(req, res){
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/departure", true);
+    tropo.on("incomplete", null, "/incomplete", true);
+
 
     res.send(TropoJSON(tropo));
 });
@@ -104,6 +108,14 @@ app.post('/departure', function(req, res){
         res.send(TropoJSON(tropo));
     });
 });
+
+
+app.post('/incomplete', function(req, res){
+    var tropo = new TropoWebAPI();
+    tropo.say("Wir konnten Sie leider nicht verstehen. Rufen Sie noch einmal ein an.");
+    res.send(TropoJSON(tropo));
+});
+
 
 
 app.get('/', function(req, res) {
