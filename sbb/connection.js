@@ -17,7 +17,6 @@ module.exports = function(from, to, callback) {
 				var departure = hour + " Uhr " + minutes;
 				stations.push("Zug fährt von " + from + " auf Gleis " + connection.connections[0].from.platform + " um " + departure + " ab");
 				for (var i in sections) {
-					//console.log(sections[i]);
 					var arrival = sections[i].arrival;
 					var arrivalTime = new Date(arrival.arrival);
 					moment().utcOffset(arrivalTime);
