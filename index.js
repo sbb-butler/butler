@@ -1,19 +1,45 @@
-/**
- * A very simple node web server that will respond to requests
- * with the Tropo WebAPI JSON version of "Hello, World!"
- */
-
 var http = require('http');
-var tropowebapi = require('tropo-webapi');
+var express = require('express');
+var app = express();
+var tropo_webapi = require('tropo-webapi');
+var server = http.createServer(app)
+var bodyParser = require('body-parser')
 
-var server = http.createServer(function (request, response) {
+// Required to process the HTTP body.
+// req.body has the Object while req.rawBody has the JSON string.
 
-    // Create a new instance of the TropoWebAPI object.
-    var tropo = new tropowebapi.TropoWebAPI();
-    tropo.say("Hello, World!");
+app.use(bodyParser.json());
 
-    // Render out the JSON for Tropo to consume.
-    response.writeHead(200, {'Content-Type': 'application/json'});
-    response.end(tropowebapi.TropoJSON(tropo));
+app.post('/', function(req, res){
 
-}).listen(80); // Listen on port 80 for requests.
+    var tropo = new TropoWebAPI();
+
+    var say = new Say("What's your favorite color?  Choose from red, blue or green.");
+    var choices = new Choices("red, blue, green");
+
+    // (choices, attempts, bargein, minConfidence, name, recognizer, required, say, timeout, voice);
+
+    tropo.ask(choices, 3, null, null, "color", null, null, say, null, null);
+
+    tropo.on("continue", null, "/continue", true);
+
+    res.send(TropoJSON(tropo));
+
+});
+
+app.post('/continue', function(req, res){
+
+    var tropo = new TropoWebAPI();
+
+    var answer = req.body['result']['actions']['value'];
+
+    tropo.say("You said " + answer);
+
+    console.log(answer)
+    res.send(TropoJSON(tropo));
+
+});
+
+app.listen(80);
+console.log('Server running on port :80');
+
