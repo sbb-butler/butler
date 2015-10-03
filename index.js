@@ -9,10 +9,13 @@ var io = require('socket.io');
 var serveStatic = require('serve-static');
 var stations = require('./stations.json');
 
+var port = process.env.VCAP_APP_PORT || 3000;
+
 app.use(bodyParser.json());
 app.use(serveStatic(__dirname + '/public'));
-io = io.listen(app.listen(80));
+io = io.listen(app.listen(port));
 
+// Stateful session store
 var sessions = {};
 
 
