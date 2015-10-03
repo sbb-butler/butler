@@ -88,7 +88,7 @@ app.post('/departure', function(req, res){
         console.log(session);
 
         sbb(session.departure, session.destination, function (error, response) {
-            if (error) {
+            if (error || response.length == 0) {
                 tropo.say("SBB konnte ihre Anfrage nicht verarbeiten.", null, null, null, null, "Stefan");
             } else {
                 var firstStation = "" + response[0];
