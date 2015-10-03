@@ -1,10 +1,7 @@
 var socket = io.connect();
-var destination;
-socket.on('destination', function(msg){
-    destination = msg.toString();
-});
 
-socket.on('departure', function(msg){
-    var row = '<tr><th>*</th><th>' + msg.toString() + '</th><th>' + destination.value + '</th></tr>';
+socket.on('call', function(msg) {
+    console.log(msg);
+    var row = '<tr><th>' + msg.callId + '</th><th>' + msg.departure + '</th><th>' + msg.destination + '</th></tr>';
     $('tbody').append(row);
 });

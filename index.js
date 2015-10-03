@@ -19,6 +19,8 @@ var sessions = {};
 
 
 app.post('/', function(req, res){
+    console.log(req.body);
+
     var tropo = new TropoWebAPI();
 
     var say = new Say("Willkommen bei SBB! Wohin wollen Sie fahren?", null, null, null, null, "Stefan");
@@ -27,6 +29,15 @@ app.post('/', function(req, res){
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "destination", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/destination", true);
+    
+    
+    var callId = req.body.session.from.id;
+    console.log(callId);
+    var sessionId = req.body['session']['id'];
+    sessions[sessionId] = {
+        callId: callId
+    };
+
 
     res.send(TropoJSON(tropo));
 });
@@ -37,9 +48,7 @@ app.post('/destination', function(req, res){
     console.log(req.body);
     var destination = req.body['result']['actions']['value'];
     var sessionId = req.body['result']['sessionId'];
-    sessions[sessionId] = {
-        destination: destination
-    }
+    sessions[sessionId].destination = destination;
 
     tropo.say("Ihr Abfahrtsort ist " + destination, null, null, null, null, "Stefan");
 
@@ -49,8 +58,6 @@ app.post('/destination', function(req, res){
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/departure", true);
-
-    io.emit('destination', { message: destination });
 
     res.send(TropoJSON(tropo));
 });
@@ -65,7 +72,7 @@ app.post('/departure', function(req, res){
 
     var session = sessions[sessionId]
 
-    io.emit('departure', { message: departure });
+    io.emit('call', session);
     console.log(session);
     sbb(session.departure, session.destination, function(response) {
         tropo.say(response, null, null, null, null, "Stefan");
