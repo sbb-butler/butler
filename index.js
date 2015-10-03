@@ -32,7 +32,7 @@ function allowStationsByGrammar(choices) {
 
 function createStationsGrammar() {
     var goodStations = allowStationsByGrammar(stations.stations);
-    return stationData.stations(goodStations.join(", ")
+    return stationData.stations(goodStations.join(", "));
 }
 
 function askLanguage(tropo) {
