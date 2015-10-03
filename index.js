@@ -93,6 +93,18 @@ function askLanguage(tropo) {
     return tropo;
 }
 
+function languageFromNumber(chosenNumber) {
+    var language = languages.german;
+    if(chosenNumber === "1") {
+        language = languages.german;
+    } else if (chosenNumber === "2") {
+        language = languages.french;
+    } else if (chosenNumber === "3") {
+        language = languages.english;
+    }
+    return language;
+}
+
 app.post('/', function(req, res){
     var tropo = askLanguage(new TropoWebAPI());
     tropo.on("continue", null, "/askDestination", true);
@@ -108,42 +120,29 @@ app.post('/', function(req, res){
     res.send(TropoJSON(tropo));
 });
 
-function languageFromNumber(chosenNumber) {
-    var language = languages.german;
-    if(chosenNumber === "1") {
-        language = languages.german;
-    } else if (chosenNumber === "2") {
-        language = languages.french;
-    } else if (chosenNumber === "3") {
-        language = languages.english;
-    }
-    return language;
-}
-
-app.post('/askDestination', function(req, res){
+app.post('/askDestination', function(req, res) {
     var tropo = new TropoWebAPI();
     console.log(req.body);
 
     if(req.body.result.actions) {
-        console.log('has action');
         var chosenNumber = req.body.result.actions.value;
         var sessionId = req.body.result.sessionId;
         var language = languageFromNumber(chosenNumber);
     
         sessions[sessionId].language = language;
-        var say = new Say(language.whereToGo, null, null, null, null, language.voice);
         var choices = new Choices(createStationsGrammar());
-        console.log(choices);
+        var say = new Say(language.whereToGo);
+        console.log(language);
         tropo.ask(choices, 3, null, null, "destination", language.recognizer, null, say, null, language.voice);
 
-        tropo.on("continue", null, "/destination", true);
+        tropo.on("continue", null, "/askDeparture", true);
         tropo.on("incomplete", null, "/incomplete", true);
 
         res.send(TropoJSON(tropo));
     }
 });
 
-app.post('/destination', function(req, res){
+app.post('/askDeparture', function(req, res){
     var tropo = new TropoWebAPI();
 
     if(req.body['result']['actions']) {
