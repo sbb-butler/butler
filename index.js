@@ -49,8 +49,8 @@ function allowStationsByGrammar(choices) {
 }
 
 function createStationsGrammar(language) {
-    var goodStations = allowStationsByGrammar(stations.stations);
-    return stationData.stations(goodStations.join(", "));
+    var goodStations = allowStationsByGrammar(stationData.stations);
+    return goodStations.join(", ");
 }
 
 function askLanguage(tropo) {
@@ -58,7 +58,7 @@ function askLanguage(tropo) {
 
     tropo.say("Für Deutsch drücken Sie die Eins.", null, null, null, null, languages.german.voice);
     tropo.say("Pour français touche deux", null, null, null, null, languages.french.voice);
-    
+
     var choices = new Choices("1,2,3");
     var say = new Say("For english press three");
     tropo.ask(choices, null, null, null, "digit", null, null, say, 60, languages.english.voice);
@@ -94,7 +94,7 @@ function languageFromNumber(chosenNumber) {
 app.post('/askDestination', function(req, res){
     var tropo = new TropoWebAPI();
     console.log(req.body);
-    
+
     if(req.body.result.actions) {
         var chosenNumber = req.body.result.actions.value;
         var sessionId = req.body.result.sessionId;
@@ -123,10 +123,6 @@ app.post('/destination', function(req, res){
         tropo.say("Ihr Ziel ist " + destination, null, null, null, null, "Stefan");
 
         var say = new Say("Von wo aus fahren Sie?");
-        var choix = stations.stations.filter(function (val) {
-            return val.indexOf(" ") == -1 && val.indexOf("-") == -1 && val.indexOf("(") == -1 && val.indexOf(".") == -1;
-        });
-
         var choices = new Choices(createStationsGrammar());
         var recognizer = "de-de";
         tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
