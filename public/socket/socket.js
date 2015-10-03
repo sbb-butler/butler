@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost', { port: 80 });
+var socket = io.connect();
 socket.on('destination', function(msg){
     $("ol").append($('<li>').text(msg));
 });
