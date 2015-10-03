@@ -30,7 +30,7 @@ var sessions = {};
 app.post('/', function(req, res){
     var tropo = new TropoWebAPI();
 
-    var say = new Say("Willkommen bei SBB! Wohin wollen Sie fahren?", null, null, null, null, "Stefan");
+    var say = new Say("Willkommen bei SBB! Wohin möchten Sie fahren?", null, null, null, null, "Stefan");
 
     var choices = new Choices(filterCallableStations(stations.stations).join(", "));
     var recognizer = "de-de";
@@ -58,9 +58,9 @@ app.post('/destination', function(req, res){
         var sessionId = req.body['result']['sessionId'];
         sessions[sessionId].destination = destination;
 
-        tropo.say("Ihr Abfahrtsort ist " + destination, null, null, null, null, "Stefan");
+        tropo.say("Ihr Ziel ist " + destination, null, null, null, null, "Stefan");
 
-        var say = new Say("Von wo fahren Sie?");
+        var say = new Say("Von wo aus fahren Sie?");
         var choix = stations.stations.filter(function (val) {
             return val.indexOf(" ") == -1 && val.indexOf("-") == -1 && val.indexOf("(") == -1 && val.indexOf(".") == -1;
         });
