@@ -184,6 +184,10 @@ p.copyright {
     margin: 15px 0 0;
 }
 
-.container iframe {
+.content-section-a iframe, .content-section-a img {
+    margin-top: 50px;
+}
+
+.content-section-b iframe, .content-section-b img {
     margin-top: 50px;
 }
