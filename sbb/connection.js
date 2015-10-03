@@ -6,7 +6,9 @@ module.exports = function(from, to, callback) {
 		var connection = JSON.parse(body);
 		var time = new Date(connection.connections[0].from.departure);
 		moment().utcOffset(time);
-		var departure = moment(time).subtract(1,'days').format('h:mm a');
-		callback({from: from, platform: connection.connections[0].from.platform, departure: departure});
+		var hour = moment(time).subtract(1,'days').format('hh');
+		var minutes = moment(time).subtract(1,'days').format('mm');
+        var saying = hour + " Uhr " + minutes;
+		callback({from: from, platform: connection.connections[0].from.platform, departure: saying});
 	});
 }
