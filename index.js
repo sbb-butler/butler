@@ -55,62 +55,66 @@ app.post('/destination', function(req, res){
     var tropo = new TropoWebAPI();
 
     //console.log(req.body);
-    var destination = req.body['result']['actions']['value'];
-    var sessionId = req.body['result']['sessionId'];
-    sessions[sessionId].destination = destination;
+    if(req.body['result']['actions']['value']) {
+        var destination = req.body['result']['actions']['value'];
+        var sessionId = req.body['result']['sessionId'];
+        sessions[sessionId].destination = destination;
 
-    tropo.say("Ihr Abfahrtsort ist " + destination, null, null, null, null, "Stefan");
+        tropo.say("Ihr Abfahrtsort ist " + destination, null, null, null, null, "Stefan");
 
-    var say = new Say("Von wo fahren Sie?");
-    var choix = stations.stations.filter(function(val) {
-        return val.indexOf(" ") == -1 && val.indexOf("-") == -1 && val.indexOf("(") == -1 && val.indexOf(".") == -1;
-    });
-    var choices = new Choices(filterCallableStations(stations.stations).join(", "));
+        var say = new Say("Von wo fahren Sie?");
+        var choix = stations.stations.filter(function (val) {
+            return val.indexOf(" ") == -1 && val.indexOf("-") == -1 && val.indexOf("(") == -1 && val.indexOf(".") == -1;
+        });
+        var choices = new Choices(filterCallableStations(stations.stations).join(", "));
 
-    var recognizer = "de-de";
-    tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
-    tropo.on("continue", null, "/departure", true);
-    tropo.on("incomplete", null, "/incomplete", true);
+        var recognizer = "de-de";
+        tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
+        tropo.on("continue", null, "/departure", true);
+        tropo.on("incomplete", null, "/incomplete", true);
 
 
-    res.send(TropoJSON(tropo));
+        res.send(TropoJSON(tropo));
+    }
 });
 
 app.post('/departure', function(req, res){
     var tropo = new TropoWebAPI();
 
     //console.log(req.body);
-    var departure = req.body['result']['actions']['value'];
-    var sessionId = req.body['result']['sessionId'];
-    sessions[sessionId].departure = departure;
+    if(req.body['result']['actions']['value']) {
+        var departure = req.body['result']['actions']['value'];
+        var sessionId = req.body['result']['sessionId'];
+        sessions[sessionId].departure = departure;
 
-    var session = sessions[sessionId];
-    //console.log(session);
+        var session = sessions[sessionId];
+        //console.log(session);
 
-    io.emit('call', session);
-    //console.log(session);
-    sbb(session.departure, session.destination, function(error, response) {
-        if(error){
-            tropo.say("SBB konnte ihre Anfrage nicht verarbeiten.", null, null, null, null, "Stefan");
-        }else {
-            var firstStation = "" + response[0];
-            tropo.say(firstStation, null, null, null, null, "Stefan");
-            // Twilio Credentials
-            var accountSid = 'AC8e449a90cfd0453b35f680291649ad18';
-            var authToken = 'cdec6c3325b55ba12e9a9973c89d828d';
+        io.emit('call', session);
+        //console.log(session);
+        sbb(session.departure, session.destination, function (error, response) {
+            if (error) {
+                tropo.say("SBB konnte ihre Anfrage nicht verarbeiten.", null, null, null, null, "Stefan");
+            } else {
+                var firstStation = "" + response[0];
+                tropo.say(firstStation, null, null, null, null, "Stefan");
+                // Twilio Credentials
+                var accountSid = 'AC8e449a90cfd0453b35f680291649ad18';
+                var authToken = 'cdec6c3325b55ba12e9a9973c89d828d';
 
-            //require the Twilio module and create a REST client
-            var client = require('twilio')(accountSid, authToken);
-            client.messages.create({
-                to: "+" + session.callId,
-                from: "(801) 335-6779",
-                body: response.toString(),
-            }, function (err, message) {
+                //require the Twilio module and create a REST client
+                var client = require('twilio')(accountSid, authToken);
+                client.messages.create({
+                    to: "+" + session.callId,
+                    from: "(801) 335-6779",
+                    body: response.toString(),
+                }, function (err, message) {
 
-            });
-        }
-        res.send(TropoJSON(tropo));
-    });
+                });
+            }
+            res.send(TropoJSON(tropo));
+        });
+    }
 });
 
 
