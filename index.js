@@ -55,7 +55,7 @@ app.post('/destination', function(req, res){
     var tropo = new TropoWebAPI();
 
     //console.log(req.body);
-    if(req.body['result']['actions']['value']) {
+    if(req.body['result']['actions']) {
         var destination = req.body['result']['actions']['value'];
         var sessionId = req.body['result']['sessionId'];
         sessions[sessionId].destination = destination;
@@ -81,8 +81,7 @@ app.post('/destination', function(req, res){
 app.post('/departure', function(req, res){
     var tropo = new TropoWebAPI();
 
-    //console.log(req.body);
-    if(req.body['result']['actions']['value']) {
+    if(req.body['result']['actions']) {
         var departure = req.body['result']['actions']['value'];
         var sessionId = req.body['result']['sessionId'];
         sessions[sessionId].departure = departure;
