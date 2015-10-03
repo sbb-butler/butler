@@ -96,6 +96,7 @@ function askLanguage(tropo) {
 app.post('/', function(req, res){
     var tropo = askLanguage(new TropoWebAPI());
     tropo.on("continue", null, "/askDestination", true);
+    tropo.on("incomplete", null, "/incomplete", true);
 
     var callId = req.body.session.from.id;
     var sessionId = req.body.session.id;
@@ -124,13 +125,15 @@ app.post('/askDestination', function(req, res){
     console.log(req.body);
 
     if(req.body.result.actions) {
+        console.log('has action');
         var chosenNumber = req.body.result.actions.value;
         var sessionId = req.body.result.sessionId;
         var language = languageFromNumber(chosenNumber);
-
+    
         sessions[sessionId].language = language;
         var say = new Say(language.whereToGo, null, null, null, null, language.voice);
         var choices = new Choices(createStationsGrammar());
+        console.log(choices);
         tropo.ask(choices, 3, null, null, "destination", language.recognizer, null, say, null, language.voice);
 
         tropo.on("continue", null, "/destination", true);
