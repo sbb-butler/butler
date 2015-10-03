@@ -3,6 +3,9 @@ var moment = require('moment');
 
 module.exports = function(from, to, callback) {
 	request('http://transport.opendata.ch/v1/connections?limit=1&from='+from+'&to='+to, function(error, res, body) {
+		if(error){
+			callback(error, [])
+		}
 		var connection = JSON.parse(body);
 		var sections = connection.connections[0].sections;
 		var stations = [];

@@ -89,22 +89,26 @@ app.post('/departure', function(req, res){
 
     io.emit('call', session);
     //console.log(session);
-    sbb(session.departure, session.destination, function(response) {
-        var firstStation = ""+response[0];
-        tropo.say(firstStation, null, null, null, null, "Stefan");
-        // Twilio Credentials 
-        var accountSid = 'AC8e449a90cfd0453b35f680291649ad18'; 
-        var authToken = 'cdec6c3325b55ba12e9a9973c89d828d'; 
-         
-        //require the Twilio module and create a REST client 
-        var client = require('twilio')(accountSid, authToken); 
-        client.messages.create({ 
-            to: "+"+session.callId, 
-            from: "(801) 335-6779", 
-            body: response.toString(),
-        }, function(err, message) { 
-            console.log(message.sid); 
-        });
+    sbb(session.departure, session.destination, function(error, response) {
+        if(error){
+            tropo.say("SBB konnte ihre Anfrage nicht verarbeiten.", null, null, null, null, "Stefan");
+        }else {
+            var firstStation = "" + response[0];
+            tropo.say(firstStation, null, null, null, null, "Stefan");
+            // Twilio Credentials
+            var accountSid = 'AC8e449a90cfd0453b35f680291649ad18';
+            var authToken = 'cdec6c3325b55ba12e9a9973c89d828d';
+
+            //require the Twilio module and create a REST client
+            var client = require('twilio')(accountSid, authToken);
+            client.messages.create({
+                to: "+" + session.callId,
+                from: "(801) 335-6779",
+                body: response.toString(),
+            }, function (err, message) {
+                
+            });
+        }
         res.send(TropoJSON(tropo));
     });
 });
