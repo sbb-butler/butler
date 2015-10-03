@@ -21,18 +21,33 @@ app.post('/', function(req, res){
     var choices = new Choices("Bern, Zurich");
 
     tropo.ask(choices, 3, null, null, "destination", null, null, say, null, null);
-    tropo.on("continue", null, "/continue", true);
+    tropo.on("continue", null, "/destination", true);
 
     res.send(TropoJSON(tropo));
 });
 
-app.post('/continue', function(req, res){
+app.post('/destination', function(req, res){
     var tropo = new TropoWebAPI();
 
     var destination = req.body['result']['actions']['value'];
-    tropo.say("Your destination is " + destination.value);
+    tropo.say("Your destination is " + destination);
+
+    var say = new Say("From where do you want to start?");
+    var choices = new Choices("Bern, Zurich");
+    tropo.ask(choices, 3, null, null, "departure", null, null, say, null, null);
+    tropo.on("continue", null, "/departure", true);
 
     console.log(destination)
+    res.send(TropoJSON(tropo));
+});
+
+app.post('/departure', function(req, res){
+    var tropo = new TropoWebAPI();
+
+    var departure = req.body['result']['actions']['value'];
+    tropo.say("Your departure is " + departure);
+
+    console.log(departure)
     res.send(TropoJSON(tropo));
 });
 
