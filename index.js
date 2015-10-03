@@ -10,8 +10,7 @@ var serveStatic = require('serve-static');
 
 
 app.use(bodyParser.json());
-app.use(serveStatic(__dirname));
-
+app.use(serveStatic(__dirname + '/public'));
 
 io = io.listen(app.listen(80));
 
