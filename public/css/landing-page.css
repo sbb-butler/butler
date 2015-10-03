@@ -43,7 +43,7 @@ h6 {
 .intro-message {
     position: relative;
     padding-top: 10%;
-    padding-bottom: 20%;
+    padding-bottom: 5%;
 }
 
 .intro-message img {
@@ -182,4 +182,8 @@ footer {
 
 p.copyright {
     margin: 15px 0 0;
+}
+
+.container iframe {
+    margin-top: 50px;
 }
