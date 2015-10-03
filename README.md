@@ -8,6 +8,11 @@ To create this project, we used [Cisco Tropo](https://www.tropo.com/) and the [S
 
 ![Phone Call Log](https://github.com/sbb-butler/butler/raw/master/photo.png "Phone Call Log")
 
+Video Demo
+----------
+
+[![Video Demo](http://img.youtube.com/vi/wABy_E8LNN4/0.jpg)](https://www.youtube.com/watch?v=wABy_E8LNN4&feature=youtu.be)
+
 
 ## Get started
 
