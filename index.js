@@ -7,10 +7,21 @@ var bodyParser = require('body-parser')
 var sbb = require('./sbb/connection.js');
 var io = require('socket.io');
 var serveStatic = require('serve-static');
+var stations = require('./stations.json');
 
 app.use(bodyParser.json());
 app.use(serveStatic(__dirname + '/public'));
 io = io.listen(app.listen(80));
+
+var sessions = {};
+
+
+function filterCallableStations(choix) {
+    return choix.filter(function(val) {
+        return val.indexOf("-") == -1 && val.indexOf("(") == -1 && val.indexOf(".") == -1 && val.indexOf("'") == -1 && val.indexOf("/") == -1 && val.indexOf("é") == -1;
+    });
+};
+
 var sessions = {};
 
 app.post('/', function(req, res){
@@ -19,13 +30,16 @@ app.post('/', function(req, res){
     var tropo = new TropoWebAPI();
 
     var say = new Say("Willkommen bei SBB! Wohin wollen Sie fahren?", null, null, null, null, "Stefan");
-    var choices = new Choices("Aarau, Aarburg, Aarburg, Adliswil, Agno, Altdorf, Altstetten, Amriswil, Appenzell, Arbon, Ascona, Aubonne, Avenches, Baar, Baden, Basel, Bellinzona, Binningen, Bremgarten, Brugg, Buchs, Bulle, Bulach, Burgdorf, Cham, Chur, Coppet, Davos, Dietikon, Dubendorf, Ebikon, Eglisau, Einsiedlen, Elgg, Emmen, Erlach, Frauenfeld, Fribourg, Glarus, Gordola, Gossau, Herisau, Greifensee, Grenchen, Horgen, Horw, Huttwil, Ilanz, Ittigen, Klingnau, Kloten, Koniz, Kreuzlingen, Kriens, Kusnacht, Lenzburg, Lichtensteig, Liestal, Locarno, Lugano, Lucerne, Lyss, Maienfeld, Martigny, Meilen, Morges, Neuchatel, Nyon, Olten, Opfikon, Orbe, Payerne, Pratteln, Rapperswil, Rheinfelden, Richterswil, Romont, Rorschach, Ruti, St.Gallen, Sargans, Sarnen, Schaffhausen, Schlieren, Schwyz, Sempach, Sierre, Sion, Solothurn, Spiez, Spreitenbach, Splügen, Stafa, Sursee, Thalwil, Thun, Thusis, Untersee, Uznach, Uster, Uzwil, Vernier, Vevey, Visp, Volketswil, Wadenswil, Waldenburg, Walenstadt, Wallisellen, Wettingen, Wetzikon, Wil, Willisau, Winterthur, Wohlen, Zofingen, Zug, Zurzach, Zurich, Geneva, Basel, Lausanne, Bern, Winterthur, Lucerne, St.Gallen, Lugano, Biel, Thun, Koniz, Schaffhausen, Fribourg, Vernier, Chur, Neuchatel, Uster, Sion");
 
+    var choices = new Choices(filterCallableStations(stations.stations).join(", "));
+    console.log(choices);
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "destination", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/destination", true);
-    
-    
+    tropo.on("incomplete", null, "/incomplete", true);
+
+
+
     var callId = req.body.session.from.id;
     //console.log(callId);
     var sessionId = req.body['session']['id'];
@@ -48,11 +62,16 @@ app.post('/destination', function(req, res){
     tropo.say("Ihr Abfahrtsort ist " + destination, null, null, null, null, "Stefan");
 
     var say = new Say("Von wo fahren Sie?");
-    var choices = new Choices("Aarau, Aarburg, Aarburg, Adliswil, Agno, Altdorf, Altstetten, Amriswil, Appenzell, Arbon, Ascona, Aubonne, Avenches, Baar, Baden, Basel, Bellinzona, Binningen, Bremgarten, Brugg, Buchs, Bulle, Bulach, Burgdorf, Cham, Chur, Coppet, Davos, Dietikon, Dubendorf, Ebikon, Eglisau, Einsiedlen, Elgg, Emmen, Erlach, Frauenfeld, Fribourg, Glarus, Gordola, Gossau, Herisau, Greifensee, Grenchen, Horgen, Horw, Huttwil, Ilanz, Ittigen, Klingnau, Kloten, Koniz, Kreuzlingen, Kriens, Kusnacht, Lenzburg, Lichtensteig, Liestal, Locarno, Lugano, Lucerne, Lyss, Maienfeld, Martigny, Meilen, Morges, Neuchatel, Nyon, Olten, Opfikon, Orbe, Payerne, Pratteln, Rapperswil, Rheinfelden, Richterswil, Romont, Rorschach, Ruti, St.Gallen, Sargans, Sarnen, Schaffhausen, Schlieren, Schwyz, Sempach, Sierre, Sion, Solothurn, Spiez, Spreitenbach, Splügen, Stafa, Sursee, Thalwil, Thun, Thusis, Untersee, Uznach, Uster, Uzwil, Vernier, Vevey, Visp, Volketswil, Wadenswil, Waldenburg, Walenstadt, Wallisellen, Wettingen, Wetzikon, Wil, Willisau, Winterthur, Wohlen, Zofingen, Zug, Zurzach, Zurich, Geneva, Basel, Lausanne, Bern, Winterthur, Lucerne, St.Gallen, Lugano, Biel, Thun, Koniz, Schaffhausen, Fribourg, Vernier, Chur, Neuchatel, Uster, Sion");
+    var choix = stations.stations.filter(function(val) {
+        return val.indexOf(" ") == -1 && val.indexOf("-") == -1 && val.indexOf("(") == -1 && val.indexOf(".") == -1;
+    });
+    var choices = new Choices(filterCallableStations(stations.stations).join(", "));
 
     var recognizer = "de-de";
     tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
     tropo.on("continue", null, "/departure", true);
+    tropo.on("incomplete", null, "/incomplete", true);
+
 
     res.send(TropoJSON(tropo));
 });
@@ -89,6 +108,14 @@ app.post('/departure', function(req, res){
         res.send(TropoJSON(tropo));
     });
 });
+
+
+app.post('/incomplete', function(req, res){
+    var tropo = new TropoWebAPI();
+    tropo.say("Wir konnten Sie leider nicht verstehen. Rufen Sie noch einmal ein an.");
+    res.send(TropoJSON(tropo));
+});
+
 
 
 app.get('/', function(req, res) {
