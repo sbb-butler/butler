@@ -4,28 +4,16 @@ var app = express();
 var tropo_webapi = require('tropo-webapi');
 var server = http.createServer(app)
 var bodyParser = require('body-parser')
-var sbb = require('./sbb/response.js');
+var sbb = require('./sbb/connection.js');
 var io = require('socket.io');
 var serveStatic = require('serve-static');
-
 
 app.use(bodyParser.json());
 app.use(serveStatic(__dirname));
 
-
 io = io.listen(app.listen(80));
-
-
-
 var sessions = {};
-
-
-// Usage
-// var response = require('./sbb/response.js');
-// response("Zurich", "St.Gallen", function(response) {
-// 	console.log(response);
-//  -> {from: "Zurich", platform: "2"}
-// });
+var callers = {};
 
 app.post('/', function(req, res){
     var tropo = new TropoWebAPI();
@@ -42,7 +30,7 @@ app.post('/', function(req, res){
 app.post('/destination', function(req, res){
     var tropo = new TropoWebAPI();
 
-    console.log(req.body);
+    //console.log(req.body);
     var destination = req.body['result']['actions']['value'];
     var sessionId = req.body['result']['sessionId'];
     sessions[sessionId] = {
@@ -63,17 +51,31 @@ app.post('/destination', function(req, res){
 app.post('/departure', function(req, res){
     var tropo = new TropoWebAPI();
 
-    console.log(req.body);
+    //console.log(req.body);
     var departure = req.body['result']['actions']['value'];
     var sessionId = req.body['result']['sessionId'];
     sessions[sessionId].departure = departure;
 
-    var session = sessions[sessionId]
+    var session = sessions[sessionId];
+    //console.log(session);
 
     io.sockets.emit('departure', { message: departure });
-    console.log(session);
+    //console.log(session);
     sbb(session.departure, session.destination, function(response) {
-        tropo.say(response);
+        tropo.say(""+response[0]);
+        // Twilio Credentials 
+        var accountSid = 'AC8e449a90cfd0453b35f680291649ad18'; 
+        var authToken = 'cdec6c3325b55ba12e9a9973c89d828d'; 
+         
+        //require the Twilio module and create a REST client 
+        var client = require('twilio')(accountSid, authToken); 
+        client.messages.create({ 
+            to: "+41792565800", 
+            from: "(801) 335-6779", 
+            body: response.toString(),
+        }, function(err, message) { 
+            console.log(message.sid); 
+        });
         res.send(TropoJSON(tropo));
     });
 });
