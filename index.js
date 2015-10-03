@@ -55,7 +55,8 @@ app.post('/destination', function(req, res){
     tropo.ask(choices, 3, null, null, "departure", null, null, say, null, null);
     tropo.on("continue", null, "/departure", true);
 
-    io.sockets.emit('destination', { message: destination });
+    io.emit('destination', { message: destination });
+
     res.send(TropoJSON(tropo));
 });
 
@@ -69,7 +70,7 @@ app.post('/departure', function(req, res){
 
     var session = sessions[sessionId]
 
-    io.sockets.emit('departure', { message: departure });
+    io.emit('departure', { message: departure });
     console.log(session);
     sbb(session.departure, session.destination, function(response) {
         tropo.say(response);
