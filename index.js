@@ -5,8 +5,17 @@ var tropo_webapi = require('tropo-webapi');
 var server = http.createServer(app)
 var bodyParser = require('body-parser')
 var sbb = require('./sbb/response.js');
+var io = require('socket.io');
+var serveStatic = require('serve-static');
+
 
 app.use(bodyParser.json());
+app.use(serveStatic(__dirname));
+
+
+io = io.listen(app.listen(80));
+
+
 
 var sessions = {};
 
@@ -47,6 +56,7 @@ app.post('/destination', function(req, res){
     tropo.ask(choices, 3, null, null, "departure", null, null, say, null, null);
     tropo.on("continue", null, "/departure", true);
 
+    io.sockets.emit('destination', { message: destination });
     res.send(TropoJSON(tropo));
 });
 
@@ -60,6 +70,7 @@ app.post('/departure', function(req, res){
 
     var session = sessions[sessionId]
 
+    io.sockets.emit('departure', { message: departure });
     console.log(session);
     sbb(session.departure, session.destination, function(response) {
         tropo.say(response);
@@ -67,5 +78,13 @@ app.post('/departure', function(req, res){
     });
 });
 
-app.listen(80);
+
+app.get('/', function(req, res) {
+    res.sendfile('index.html');
+});
+
+
+//app.listen(80);
 console.log('Server running on port :80');
+
+
