@@ -109,6 +109,7 @@ app.post('/', function(req, res){
     var sessionId = req.body.session.id;
 
     var previous = previousCall(callId);
+    console.log(previous);
 
     if(previous) {
         var session = previous;
@@ -222,7 +223,7 @@ app.post('/departure', function(req, res){
                 var authToken = 'cdec6c3325b55ba12e9a9973c89d828d';
 
                 session.completed = true;
-                session.sections = sections;
+                sessions[sessionId].sections = sections;
 
                 //require the Twilio module and create a REST client
                 var client = require('twilio')(accountSid, authToken);
