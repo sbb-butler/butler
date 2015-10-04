@@ -15,17 +15,35 @@ var languages = {
     german: {
         voice: "Stefan",
         recognizer: "de-de",
-        whereToGo: "Wohin wollen Sie reisen?"
+        whereToGo: "Wohin wollen Sie reisen?",
+        whereToDepart: "Von wo starten sie?",
+        couldNotHandleRequest: "SBB konnte ihre Anfrage nicht verarbeiten.",
+        couldNotUnderstand: "Wir konnten Sie leider nicht verstehen. Rufen Sie noch einmal ein an.",
+        destinationIs: function(destination) {
+            return "Ihr Ziel ist " + destination;
+        }
     },
     french: {
         voice: "Florence",
         recognizer: "fr-fr",
-        whereToGo: "Quelle destination?"
+        whereToGo: "Quelle destination?",
+        whereToDepart: "Quelle début?",
+        couldNotHandleRequest: "C'est pas possible de traiter votre demande.",
+        couldNotUnderstand: "Nous ne pouvions pas les comprendre, malheureusement, S'il vous plaît appelons tard.",
+        destinationIs: function(destination) {
+            return "Votre objective est " + destination;
+        }
     },
     english: {
         voice: "Veronica",
         recognizer: "en-us",
-        whereToGo: "Where do you want to go?"
+        whereToGo: "Where do you want to go?",
+        whereToDepart: "From where do you start?",
+        couldNotHandleRequest: "SBB could not handle your request.",
+        couldNotUnderstand: "Cannot understand you. Please call again.",
+        destinationIs: function(destination) {
+            return "Your destination is " + destination;
+        }
     }
 }
 
@@ -119,16 +137,15 @@ app.post('/destination', function(req, res){
         var destination = req.body['result']['actions']['value'];
         var sessionId = req.body['result']['sessionId'];
         sessions[sessionId].destination = destination;
+        var language = sessions[sessionId].language;
 
-        tropo.say("Ihr Ziel ist " + destination, null, null, null, null, "Stefan");
+        tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
 
         var say = new Say("Von wo aus fahren Sie?");
         var choices = new Choices(createStationsGrammar());
-        var recognizer = "de-de";
-        tropo.ask(choices, 3, null, null, "departure", recognizer, null, say, null, "Stefan");
+        tropo.ask(choices, 3, null, null, "departure", language.recognizer, null, say, null, language.voice);
         tropo.on("continue", null, "/departure", true);
         tropo.on("incomplete", null, "/incomplete", true);
-
 
         res.send(TropoJSON(tropo));
     }
@@ -143,6 +160,7 @@ app.post('/departure', function(req, res){
         sessions[sessionId].departure = departure;
 
         var session = sessions[sessionId];
+        var language = session.language;
 
         io.emit('call', session);
 
@@ -150,7 +168,7 @@ app.post('/departure', function(req, res){
 
         sbb(session.departure, session.destination, function (error, response) {
             if (error || response.length == 0) {
-                tropo.say("SBB konnte ihre Anfrage nicht verarbeiten.", null, null, null, null, "Stefan");
+                tropo.say(language.couldNotHandleRequest, null, null, null, null, "Stefan");
             } else {
                 var firstStation = "" + response[0];
                 tropo.say(firstStation, null, null, null, null, "Stefan");
@@ -178,19 +196,11 @@ app.post('/departure', function(req, res){
 });
 
 
-app.post('/incomplete', function(req, res){
+app.post('/incomplete', function(req, res) {
+    console.log(req.body);
     var tropo = new TropoWebAPI();
     tropo.say("Wir konnten Sie leider nicht verstehen. Rufen Sie noch einmal ein an.", null, null, null, null, "Stefan");
     res.send(TropoJSON(tropo));
 });
 
-
-
-app.get('/', function(req, res) {
-    res.sendfile('index.html');
-});
-
-
 console.log('Server running on port :' + port);
-
-
