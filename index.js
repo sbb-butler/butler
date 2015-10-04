@@ -83,6 +83,15 @@ function askLanguage(tropo) {
     return tropo;
 }
 
+function alreadyCalled(callId) {
+    for(var key in sessions) {
+        if(sessions[key].callId === callId) {
+            return true; 
+        }
+    }
+    return false;
+}
+
 app.post('/', function(req, res){
     var tropo = askLanguage(new TropoWebAPI());
     tropo.on("continue", null, "/askDestination", true);
@@ -90,9 +99,16 @@ app.post('/', function(req, res){
     var callId = req.body.session.from.id;
     var sessionId = req.body.session.id;
 
-    sessions[sessionId] = {
-        callId: callId
-    };
+    if (alreadyCalled(callId)) {
+        var session = sessions[sessionId];
+        var language = session.language;
+        var destination = session.destination;
+        tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
+    } else {
+        sessions[sessionId] = {
+            callId: callId
+        };
+    }
 
     res.send(TropoJSON(tropo));
 });
