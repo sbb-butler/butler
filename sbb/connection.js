@@ -1,5 +1,6 @@
 var request = require('request');
 var moment = require('moment');
+var tz = require('moment-timezone');
 
 module.exports = function(from, to, callback) {
 	request('http://transport.opendata.ch/v1/connections?limit=1&from='+from+'&to='+to, function(error, res, body) {
@@ -23,12 +24,11 @@ module.exports = function(from, to, callback) {
 
 				for (var i in sections) {
 					var arrival = sections[i].arrival;
-					var arrivalTime = new Date(arrival.arrival);
-					moment().utcOffset(arrivalTime);
-					var hour = moment(arrivalTime).subtract(1, 'days').format('hh');
-					var minutes = moment(arrivalTime).subtract(1, 'days').format('mm');
-					var departureTime = hour + " Uhr " + minutes;
-					stations.push("Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + departureTime);
+                    var arriveAt = moment(arrival.arrival).tz("Europe/Zurich");
+                    var arrivalTimeSpeech = arriveAt.format('hh') + " Uhr " + arriveAt.format('mm');
+
+					stations.push("Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + arrivalTimeSpeech);
+
 				}
                 callback(error, stations, sections);
 			} else {

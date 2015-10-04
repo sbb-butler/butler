@@ -42,7 +42,7 @@ var languages = {
             console.log(departure);
             if(departure.departure) {
                 var departAt = moment(departure.departure).tz("Europe/Zurich");
-                var departureTimeSpeech = departAt.hours().format("hh") + " Uhr " + departAt.minutes().format("mm");
+                var departureTimeSpeech = departAt.format("hh") + " Uhr " + departAt.format("mm");
 
                 departureSentence = "Wechseln Sie auf Gleis " + arrival.platform + ". Der Zug fährt um " + departureTimeSpeech + " nach " + departure.station.name + ".";
             }
