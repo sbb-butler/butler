@@ -24,7 +24,14 @@ var languages = {
             return "Ihr Ziel ist " + destination;
         },
         nextSectionIs: function(section) {
-            return "Du erreichst " + section.arrival.station.name;
+            var arrival = section.arrival;
+            var arrivalTime = new Date(arrival.arrival);
+            moment().utcOffset(arrivalTime);
+            var hour = moment(arrivalTime).subtract(1, 'days').format('hh');
+            var minutes = moment(arrivalTime).subtract(1, 'days').format('mm');
+            var departureTime = hour + " Uhr " + minutes;
+
+            return "Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + departureTime;
         }
     },
     french: {
@@ -119,6 +126,12 @@ app.post('/', function(req, res){
 
         if(session.sections && session.sections.length > 0) {
             var nextSection = session.sections.pop();
+
+            //Pop one more if we would have to walk
+            if(nextSection.walk) {
+                nextSection = session.sections.pop();
+            }
+
             console.log(nextSection);
             // Here we could build to respond to the destination
             tropo.say(language.nextSectionIs(nextSection), null, null, null, null, language.voice);
