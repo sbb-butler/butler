@@ -100,8 +100,9 @@ app.post('/', function(req, res){
     var sessionId = req.body.session.id;
 
     var previous = previousCall(callId);
+    console.log(sessions);
+    console.log(previous);
     if(previous) {
-        console.log(sessions);
         var session = previous;
         var language = session.language;
         var destination = session.destination;
@@ -130,7 +131,6 @@ function languageFromNumber(chosenNumber) {
 
 app.post('/askDestination', function(req, res){
     var tropo = new TropoWebAPI();
-    console.log(req.body);
 
     if(req.body.result.actions) {
         var chosenNumber = req.body.result.actions.value;
@@ -219,7 +219,6 @@ app.post('/departure', function(req, res){
 
 
 app.post('/incomplete', function(req, res) {
-    console.log(req.body);
     var tropo = new TropoWebAPI();
     tropo.say("Wir konnten Sie leider nicht verstehen. Rufen Sie noch einmal ein an.", null, null, null, null, "Stefan");
     res.send(TropoJSON(tropo));
