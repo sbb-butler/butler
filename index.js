@@ -206,7 +206,6 @@ app.post('/departure', function(req, res){
 
         io.emit('call', session);
 
-        console.log(session);
 
         sbb(session.departure, session.destination, function (error, stations, sections) {
             if (error || stations.length == 0) {
@@ -224,6 +223,7 @@ app.post('/departure', function(req, res){
 
                 session.completed = true;
                 sessions[sessionId].sections = sections;
+                console.log(session);
 
                 //require the Twilio module and create a REST client
                 var client = require('twilio')(accountSid, authToken);

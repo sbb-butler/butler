@@ -24,11 +24,11 @@ module.exports = function(from, to, callback) {
 					var minutes = moment(arrivalTime).subtract(1, 'days').format('mm');
 					var departureTime = hour + " Uhr " + minutes;
 					stations.push("Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + departureTime);
+                    callback(error, stations, sections);
 				}
 			}else{
 				callback(new Error("No connections found."),[]);
 			}
-			callback(error, stations);
 		}
 	});
 }
