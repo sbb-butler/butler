@@ -83,10 +83,10 @@ function askLanguage(tropo) {
     return tropo;
 }
 
-function alreadyCalled(callId) {
+function previousCall(callId) {
     for(var key in sessions) {
         if(sessions[key].callId === callId && sessions[key].completed === true) {
-            return true;
+            return sessions[key];
         }
     }
     return false;
@@ -99,9 +99,10 @@ app.post('/', function(req, res){
     var callId = req.body.session.from.id;
     var sessionId = req.body.session.id;
 
-    if (alreadyCalled(callId) === true) {
+    var previous = previousCall(callId);
+    if(previous) {
         console.log(sessions);
-        var session = sessions[sessionId];
+        var session = previous;
         var language = session.language;
         var destination = session.destination;
         tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
