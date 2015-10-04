@@ -99,7 +99,8 @@ app.post('/', function(req, res){
     var callId = req.body.session.from.id;
     var sessionId = req.body.session.id;
 
-    if (alreadyCalled(callId)) {
+    if (alreadyCalled(callId) === true) {
+        console.log(sessions);
         var session = sessions[sessionId];
         var language = session.language;
         var destination = session.destination;
