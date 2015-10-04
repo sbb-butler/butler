@@ -12,6 +12,12 @@ To create this project, we used [Cisco Tropo](https://www.tropo.com/) and the [S
 
 ![Website Screenshot](photo.jpg)
 
+Features:
+
+- Get information about time table
+- Call back in the train to receive next destination
+- Multi Language support
+
 Video Demo
 ----------
 

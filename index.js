@@ -5,6 +5,7 @@ var tropo_webapi = require('tropo-webapi');
 var server = http.createServer(app)
 var bodyParser = require('body-parser')
 var sbb = require('./sbb/connection.js');
+var moment = require('moment');
 var io = require('socket.io');
 var serveStatic = require('serve-static');
 var stationData = require('./stations.json');
@@ -94,10 +95,12 @@ function askLanguage(tropo) {
     tropo.say("Guten Tag, herzlich willkommen bei ihrer SBB Auskunft!", null, null, null, null, languages.german.voice);
 
     var choices = new Choices("1,2,3");
-    var say = new Say("Für Deutsch drücken Sie die Eins");
-    tropo.ask(choices, null, null, null, "digit", null, null, say, 60, languages.german.voice);
+
+    tropo.say("Für Deutsch drücken Sie die Eins.", null, null, null, null, languages.german.voice);
     tropo.say("Pour français touche deux", null, null, null, null, languages.french.voice);
-    tropo.say("For English press three", null, null, null, null, languages.english.voice);
+
+    var say = new Say("For english press three");
+    tropo.ask(choices, null, null, null, "digit", null, null, say, 60, languages.english.voice);
 
     return tropo;
 }
