@@ -93,26 +93,28 @@ function previousCall(callId) {
 }
 
 app.post('/', function(req, res){
-    var tropo = askLanguage(new TropoWebAPI());
-    tropo.on("continue", null, "/askDestination", true);
-
     var callId = req.body.session.from.id;
     var sessionId = req.body.session.id;
 
     var previous = previousCall(callId);
+
     console.log(sessions);
     console.log(previous);
+
     if(previous) {
         var session = previous;
         var language = session.language;
         var destination = session.destination;
         tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
     } else {
-        sessions[sessionId] = {
-            callId: callId,
-            completed: false
-        };
+        var tropo = askLanguage(new TropoWebAPI());
+        tropo.on("continue", null, "/askDestination", true);
     }
+
+    sessions[sessionId] = {
+        callId: callId,
+        completed: false
+    };
 
     res.send(TropoJSON(tropo));
 });
