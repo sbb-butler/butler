@@ -7,7 +7,7 @@ module.exports = function(from, to, callback) {
 			callback(error, []);
 		}else {
 			var connection = JSON.parse(body);
-			if(connection.connections){
+			if (connection.connections) {
 				var sections = connection.connections[0].sections;
 				var stations = [];
 				var time = new Date(connection.connections[0].from.departure);
@@ -24,9 +24,9 @@ module.exports = function(from, to, callback) {
 					var minutes = moment(arrivalTime).subtract(1, 'days').format('mm');
 					var departureTime = hour + " Uhr " + minutes;
 					stations.push("Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + departureTime);
-                    callback(error, stations, sections);
 				}
-			}else{
+                callback(error, stations, sections);
+			} else {
 				callback(new Error("No connections found."),[]);
 			}
 		}
