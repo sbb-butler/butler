@@ -11,11 +11,16 @@ module.exports = function(from, to, callback) {
 				var sections = connection.connections[0].sections;
 				var stations = [];
 				var time = new Date(connection.connections[0].from.departure);
+
+                console.log(connection.connections[0].from.departure);
 				moment().utcOffset(time);
+
 				var hour = moment(time).subtract(1, 'days').format('hh');
 				var minutes = moment(time).subtract(1, 'days').format('mm');
 				var departure = hour + " Uhr " + minutes;
+
 				stations.push("Der Zug fährt von " + from + " auf Gleis " + connection.connections[0].from.platform + " um " + departure + " ab");
+
 				for (var i in sections) {
 					var arrival = sections[i].arrival;
 					var arrivalTime = new Date(arrival.arrival);

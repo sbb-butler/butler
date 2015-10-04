@@ -25,7 +25,10 @@ var languages = {
             return "Ihr Ziel ist " + destination;
         },
         nextSectionIs: function(section) {
+            console.log(section);
             var arrival = section.arrival;
+
+
             var arrivalTime = new Date(arrival.arrival);
             moment().utcOffset(arrivalTime);
             var hour = moment(arrivalTime).subtract(1, 'days').format('hh');

@@ -2,7 +2,7 @@
 
 ![Phone Call Log](https://github.com/sbb-butler/butler/raw/master/sbbbutler.png "Overview")
 
-Please visit the website: http://sbbbutler.dreicloud.ch/
+Please visit the website: http://sbbbutler.cf/
 
 The SBB Butler delivers an easy and quick way to get the timetable for your next journey. Just call our phone number and tell us where you want to go. We will tell you when the train leaves at the train station nearby.
 
