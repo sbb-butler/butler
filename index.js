@@ -25,17 +25,28 @@ var languages = {
             return "Ihr Ziel ist " + destination;
         },
         nextSectionIs: function(section) {
-            console.log(section);
             var arrival = section.arrival;
+            var departure= section.departure;
 
+            var arrivalSentence = "";
+            var departureSentence = "";
 
-            var arrivalTime = new Date(arrival.arrival);
-            moment().utcOffset(arrivalTime);
-            var hour = moment(arrivalTime).subtract(1, 'days').format('hh');
-            var minutes = moment(arrivalTime).subtract(1, 'days').format('mm');
-            var departureTime = hour + " Uhr " + minutes;
+            console.log(arrival);
+            if(arrival.arrival) {
+                var arriveAt = moment.tz(arrival.arrival, "Europe/Zurich");
+                var arrivalTimeSpeech = arriveAt.hours() + " Uhr " + arriveAt.minutes();
+                arrivalSentence = "Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + arrivalTimeSpeech + ".";
+            }
 
-            return "Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + departureTime;
+            console.log(departure);
+            if(departure.departure) {
+                var departAt = moment.tz(departure.departure, "Europe/Zurich");
+                var departureTimeSpeech = departAt.hours() + " Uhr " + departAt.minutes();
+
+                departureSentence = "Wechseln Sie auf Gleis " + arrival.platform + ". Der Zug fährt um " + departureTimeSpeech + " nach " + departure.station.name + ".";
+            }
+
+            return arrivalSentence + departureSentence;
         }
     },
     french: {
@@ -122,7 +133,6 @@ app.post('/', function(req, res){
     var sessionId = req.body.session.id;
 
     var previous = previousCall(callId);
-    console.log(previous);
 
     if(previous) {
         var session = previous;
