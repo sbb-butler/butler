@@ -15,34 +15,46 @@ var languages = {
     german: {
         voice: "Stefan",
         recognizer: "de-de",
+        arrivalReached: "Sie sind angekommen.",
         whereToGo: "Wohin wollen Sie reisen?",
         whereToDepart: "Von wo starten sie?",
         couldNotHandleRequest: "SBB konnte ihre Anfrage nicht verarbeiten.",
         couldNotUnderstand: "Wir konnten Sie leider nicht verstehen. Rufen Sie noch einmal ein an.",
         destinationIs: function(destination) {
             return "Ihr Ziel ist " + destination;
+        },
+        nextSectionIs: function(section) {
+            return "Du erreichst " + section.arrival.station.name;
         }
     },
     french: {
         voice: "Florence",
         recognizer: "fr-fr",
+        arrivalReached: "Vous êtes arrivé.",
         whereToGo: "Quelle destination?",
         whereToDepart: "Quelle début?",
         couldNotHandleRequest: "C'est pas possible de traiter votre demande.",
         couldNotUnderstand: "Nous ne pouvions pas les comprendre, malheureusement, S'il vous plaît appelons tard.",
         destinationIs: function(destination) {
             return "Votre objective est " + destination;
+        },
+        nextSectionIs: function(section) {
+            return "Tu est a " + section.arrival.station.name;
         }
     },
     english: {
         voice: "Veronica",
         recognizer: "en-us",
+        arrivalReached: "You arrived.",
         whereToGo: "Where do you want to go?",
         whereToDepart: "From where do you start?",
         couldNotHandleRequest: "SBB could not handle your request.",
         couldNotUnderstand: "Cannot understand you. Please call again.",
         destinationIs: function(destination) {
             return "Your destination is " + destination;
+        },
+        nextSectionIs: function(section) {
+            return "Next section is" + section.arrival.station.name;
         }
     }
 }
@@ -98,17 +110,21 @@ app.post('/', function(req, res){
 
     var previous = previousCall(callId);
 
-    console.log(sessions);
-    console.log(previous);
-
     if(previous) {
         var session = previous;
         var language = session.language;
         var destination = session.destination;
         var tropo = new TropoWebAPI();
 
-        // Here we could build to respond to the destination
-        tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
+        if(session.sections && session.sections.length > 0) {
+            var nextSection = session.sections.pop();
+            console.log(nextSection);
+            // Here we could build to respond to the destination
+            tropo.say(language.nextSectionIs(nextSection), null, null, null, null, language.voice);
+        } else {
+            tropo.say(language.arrivalReached, null, null, null, null, language.voice);
+        }
+
     } else {
         var tropo = askLanguage(new TropoWebAPI());
         tropo.on("continue", null, "/askDestination", true);
@@ -191,28 +207,29 @@ app.post('/departure', function(req, res){
 
         console.log(session);
 
-        sbb(session.departure, session.destination, function (error, response) {
-            if (error || response.length == 0) {
+        sbb(session.departure, session.destination, function (error, stations, sections) {
+            if (error || stations.length == 0) {
                 tropo.say(language.couldNotHandleRequest, null, null, null, null, language.voice);
             } else {
-                var firstStation = "" + response[0];
+                var firstStation = "" + stations[0];
                 tropo.say(firstStation, null, null, null, null, language.voice);
 
                 tropo.call(session.callId, null, null, null, null, null, "SMS", null, null, null);
-                tropo.say(response.toString());
+                tropo.say(stations.toString());
 
                 // Twilio Credentials
                 var accountSid = 'AC8e449a90cfd0453b35f680291649ad18';
                 var authToken = 'cdec6c3325b55ba12e9a9973c89d828d';
 
                 session.completed = true;
+                session.sections = sections;
 
                 //require the Twilio module and create a REST client
                 var client = require('twilio')(accountSid, authToken);
                 client.messages.create({
                     to: "+" + session.callId,
                     from: "(801) 335-6779",
-                    body: response.toString(),
+                    body: stations.toString(),
                 }, function (err, message) {
 
                 });
