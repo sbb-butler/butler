@@ -85,8 +85,8 @@ function askLanguage(tropo) {
 
 function alreadyCalled(callId) {
     for(var key in sessions) {
-        if(sessions[key].callId === callId) {
-            return true; 
+        if(sessions[key].callId === callId && sessions[key].completed === true) {
+            return true;
         }
     }
     return false;
@@ -107,7 +107,8 @@ app.post('/', function(req, res){
         tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
     } else {
         sessions[sessionId] = {
-            callId: callId
+            callId: callId,
+            completed: false
         };
     }
 
@@ -197,6 +198,8 @@ app.post('/departure', function(req, res){
                 // Twilio Credentials
                 var accountSid = 'AC8e449a90cfd0453b35f680291649ad18';
                 var authToken = 'cdec6c3325b55ba12e9a9973c89d828d';
+
+                session.completed = true;
 
                 //require the Twilio module and create a REST client
                 var client = require('twilio')(accountSid, authToken);
