@@ -6,6 +6,7 @@ var server = http.createServer(app)
 var bodyParser = require('body-parser')
 var sbb = require('./sbb/connection.js');
 var moment = require('moment');
+var tz = require('moment-timezone');
 var io = require('socket.io');
 var serveStatic = require('serve-static');
 var stationData = require('./stations.json');
@@ -33,15 +34,15 @@ var languages = {
 
             console.log(arrival);
             if(arrival.arrival) {
-                var arriveAt = moment.tz(arrival.arrival, "Europe/Zurich");
-                var arrivalTimeSpeech = arriveAt.hours() + " Uhr " + arriveAt.minutes();
+                var arriveAt = moment(arrival.arrival).tz("Europe/Zurich");
+                var arrivalTimeSpeech = arriveAt.format('hh') + " Uhr " + arriveAt.format('mm');
                 arrivalSentence = "Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + arrivalTimeSpeech + ".";
             }
 
             console.log(departure);
             if(departure.departure) {
-                var departAt = moment.tz(departure.departure, "Europe/Zurich");
-                var departureTimeSpeech = departAt.hours() + " Uhr " + departAt.minutes();
+                var departAt = moment(departure.departure).tz("Europe/Zurich");
+                var departureTimeSpeech = departAt.hours().format("hh") + " Uhr " + departAt.minutes().format("mm");
 
                 departureSentence = "Wechseln Sie auf Gleis " + arrival.platform + ". Der Zug fährt um " + departureTimeSpeech + " nach " + departure.station.name + ".";
             }
