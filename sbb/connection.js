@@ -29,6 +29,7 @@ module.exports = function(from, to, callback) {
 
 					stations.push("Ankunft in " + arrival.station.name + " auf Gleis " + arrival.platform + " um " + arrivalTimeSpeech);
 
+
 				}
                 callback(error, stations, sections);
 			} else {
