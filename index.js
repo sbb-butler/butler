@@ -74,12 +74,12 @@ function createStationsGrammar(language) {
 function askLanguage(tropo) {
     tropo.say("Guten Tag, herzlich willkommen bei ihrer SBB Auskunft!", null, null, null, null, languages.german.voice);
 
-    tropo.say("Für Deutsch drücken Sie die Eins.", null, null, null, null, languages.german.voice);
-    tropo.say("Pour français touche deux", null, null, null, null, languages.french.voice);
-
     var choices = new Choices("1,2,3");
-    var say = new Say("For english press three");
-    tropo.ask(choices, null, null, null, "digit", null, null, say, 60, languages.english.voice);
+    var say = new Say("Für Deutsch drücken Sie die Eins");
+    tropo.ask(choices, null, null, null, "digit", null, null, say, 60, languages.german.voice);
+    tropo.say("Pour français touche deux", null, null, null, null, languages.french.voice);
+    tropo.say("For English press three", null, null, null, null, languages.english.voice);
+
     return tropo;
 }
 
@@ -105,6 +105,9 @@ app.post('/', function(req, res){
         var session = previous;
         var language = session.language;
         var destination = session.destination;
+        var tropo = new TropoWebAPI();
+
+        // Here we could build to respond to the destination
         tropo.say(language.destinationIs(destination), null, null, null, null, language.voice);
     } else {
         var tropo = askLanguage(new TropoWebAPI());
